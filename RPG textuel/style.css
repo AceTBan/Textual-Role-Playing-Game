@@ -33,3 +33,9 @@ input[type="button"]:disabled {
     border-radius: 8px;
     margin-top: 20px;
 }
+#resume {
+    max-height: 300px;      /* Hauteur maximale avant l'apparition de la barre de scroll */
+    overflow-y: auto;       /* Active la barre de défilement verticale uniquement si nécessaire */
+    border: 1px solid #ccc; /* Optionnel : pour encadrer proprement la zone de combat */
+    padding: 10px;          /* Optionnel : un peu d'espace intérieur */
+}

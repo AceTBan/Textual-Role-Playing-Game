@@ -6,16 +6,26 @@ document.addEventListener('DOMContentLoaded',function() {
         resume = document.querySelector('#resume'),
         malik, valentin,
         tourDeCombat = 0,
-        coupsCritiquesTotaux = 0; 
+        coupsCritiquesTotaux = 0,
+        secondesCombat = 0,     //   Variable pour compter le temps
+        timerCombat = null;     //   Variable pour stocker l'intervalle du timer
 
     lancer.addEventListener('click',function(){
         malik = new Perso('Malik');
         valentin = new Perso('Valentin');
         tourDeCombat = 0;
-        coupsCritiquesTotaux = 0; // Remise à zéro
+        coupsCritiquesTotaux = 0;
+        secondesCombat = 0;     // Remise à zéro du chrono
+
+        //   Gestion du chronomètre (lance les secondes)
+        clearInterval(timerCombat);
+        timerCombat = setInterval(() => {
+            secondesCombat++;
+        }, 1000);
+
         resume.innerHTML = '<p>' + malik.histoire() + '</p>';
         resume.innerHTML = '<p>' + valentin.histoire() + '</p>' + resume.innerHTML;
-        attaque.disabled = false;
+        attaque.disabled = false; // Activation du bouton "attaque"
     });
 
     attaque.addEventListener('click', function() {
@@ -26,7 +36,6 @@ document.addEventListener('DOMContentLoaded',function() {
             let resultatMalik = malik.patate(valentin);
             let resultatValentin = valentin.patate(malik);
 
-            //  2. On compte s'il y a eu des critiques dans ce tour
             if (resultatMalik.includes('💥')) coupsCritiquesTotaux++;
             if (resultatValentin.includes('💥')) coupsCritiquesTotaux++;
 
@@ -36,9 +45,11 @@ document.addEventListener('DOMContentLoaded',function() {
             resume.innerHTML += '<p>' + valentin.nom + ' : ' + valentin.sante + ' PV</p>';
 
             if (malik.sante <= 0 || valentin.sante <= 0) {
-                attaque.disabled = true;
-                //  3. On affiche le bilan des critiques à la fin
-                resume.innerHTML += '<p>Combat terminé en ' + tourDeCombat + ' tours avec <strong>' + coupsCritiquesTotaux + ' coup(s) critique(s)</strong> au total !</p>';
+                attaque.disabled = true; // Désactivation du bouton
+                clearInterval(timerCombat); //   On stoppe le chrono à la fin du combat
+
+                //   Affichage du bilan complet avec le temps écoulé
+                resume.innerHTML += '<p>Combat terminé en <strong>' + tourDeCombat + ' tours</strong>, <strong>' + coupsCritiquesTotaux + ' coup(s) critique(s)</strong> et en <strong>' + secondesCombat + ' secondes</strong> !</p>';
                 showWinner();
             }
         }
@@ -46,11 +57,15 @@ document.addEventListener('DOMContentLoaded',function() {
 
     function showWinner() { 
         let winner; 
-        if (malik.sante > 0) { winner = 'Malik'; } 
-        else if (valentin.sante > 0) { winner = 'Valentin'; } 
-        else { winner = 'Aucun des deux !'; } 
+        if (malik.sante > 0) { 
+            winner = 'Malik'; 
+        } else if (valentin.sante > 0) { 
+            winner = 'Valentin'; 
+        } else { 
+            winner = 'Aucun des deux !'; 
+        } 
         setTimeout(function() { 
-            if (confirm(winner + ' a gagné ! Voulez-vous rejouer ?')) { 
+            if (confirm(winner + ' a gagné en ' + secondesCombat + ' secondes ! Voulez-vous rejouer ?')) { 
                 lancer.click(); 
             } 
         }, 100); 

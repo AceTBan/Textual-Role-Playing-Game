@@ -7,17 +7,17 @@ document.addEventListener('DOMContentLoaded',function() {
         malik, valentin,
         tourDeCombat = 0,
         coupsCritiquesTotaux = 0,
-        secondesCombat = 0,     //   Variable pour compter le temps
-        timerCombat = null;     //   Variable pour stocker l'intervalle du timer
+        secondesCombat = 0,
+        timerCombat = null,
+        historiqueCombats = []; //  Tableau pour stocker l'historique des parties
 
     lancer.addEventListener('click',function(){
         malik = new Perso('Malik');
         valentin = new Perso('Valentin');
         tourDeCombat = 0;
         coupsCritiquesTotaux = 0;
-        secondesCombat = 0;     // Remise à zéro du chrono
+        secondesCombat = 0;
 
-        //   Gestion du chronomètre (lance les secondes)
         clearInterval(timerCombat);
         timerCombat = setInterval(() => {
             secondesCombat++;
@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded',function() {
 
         resume.innerHTML = '<p>' + malik.histoire() + '</p>';
         resume.innerHTML = '<p>' + valentin.histoire() + '</p>' + resume.innerHTML;
-        attaque.disabled = false; // Activation du bouton "attaque"
+        attaque.disabled = false;
     });
 
     attaque.addEventListener('click', function() {
@@ -45,25 +45,35 @@ document.addEventListener('DOMContentLoaded',function() {
             resume.innerHTML += '<p>' + valentin.nom + ' : ' + valentin.sante + ' PV</p>';
 
             if (malik.sante <= 0 || valentin.sante <= 0) {
-                attaque.disabled = true; // Désactivation du bouton
-                clearInterval(timerCombat); //   On stoppe le chrono à la fin du combat
+                attaque.disabled = true;
+                clearInterval(timerCombat);
 
-                //   Affichage du bilan complet avec le temps écoulé
+                // Détermination du gagnant pour l'historique
+                let vainqueur = (malik.sante > 0) ? 'Malik' : (valentin.sante > 0) ? 'Valentin' : 'Match nul';
+                
+                // ajoute le combat terminé dans l'historique
+                historiqueCombats.unshift({
+                    vainqueur: vainqueur,
+                    tours: tourDeCombat,
+                    temps: secondesCombat
+                });
+
+                // Construction du texte de l'historique
+                let texteHistorique = '<h4>📜 Historique des combats :</h4><ul>';
+                historiqueCombats.slice(0, 3).forEach((h, index) => { // On garde les 3 derniers
+                    texteHistorique += '<li>Partie ' + (index + 1) + ' : Victoire de <strong>' + h.vainqueur + '</strong> (' + h.tours + ' tours, ' + h.temps + 's)</li>';
+                });
+                texteHistorique += '</ul>';
+
                 resume.innerHTML += '<p>Combat terminé en <strong>' + tourDeCombat + ' tours</strong>, <strong>' + coupsCritiquesTotaux + ' coup(s) critique(s)</strong> et en <strong>' + secondesCombat + ' secondes</strong> !</p>';
-                showWinner();
+                resume.innerHTML += texteHistorique; //  Affichage de l'historique dans le résumé
+
+                showWinner(vainqueur);
             }
         }
     });
 
-    function showWinner() { 
-        let winner; 
-        if (malik.sante > 0) { 
-            winner = 'Malik'; 
-        } else if (valentin.sante > 0) { 
-            winner = 'Valentin'; 
-        } else { 
-            winner = 'Aucun des deux !'; 
-        } 
+    function showWinner(winner) { 
         setTimeout(function() { 
             if (confirm(winner + ' a gagné en ' + secondesCombat + ' secondes ! Voulez-vous rejouer ?')) { 
                 lancer.click(); 

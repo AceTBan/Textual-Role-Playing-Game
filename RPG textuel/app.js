@@ -9,7 +9,11 @@ document.addEventListener('DOMContentLoaded',function() {
         coupsCritiquesTotaux = 0,
         secondesCombat = 0,
         timerCombat = null,
-        historiqueCombats = []; //  Tableau pour stocker l'historique des parties
+        historiqueCombats = [],
+        // Variables pour les statistiques globales de session
+        totalParties = 0,
+        victoiresMalik = 0,
+        victoiresValentin = 0;
 
     lancer.addEventListener('click',function(){
         malik = new Perso('Malik');
@@ -48,25 +52,31 @@ document.addEventListener('DOMContentLoaded',function() {
                 attaque.disabled = true;
                 clearInterval(timerCombat);
 
-                // Détermination du gagnant pour l'historique
                 let vainqueur = (malik.sante > 0) ? 'Malik' : (valentin.sante > 0) ? 'Valentin' : 'Match nul';
                 
-                // ajoute le combat terminé dans l'historique
+                // Mise à jour des stats globales de session
+                totalParties++;
+                if (vainqueur === 'Malik') victoiresMalik++;
+                if (vainqueur === 'Valentin') victoiresValentin++;
+
                 historiqueCombats.unshift({
                     vainqueur: vainqueur,
                     tours: tourDeCombat,
                     temps: secondesCombat
                 });
 
-                // Construction du texte de l'historique
-                let texteHistorique = '<h4>📜 Historique des combats :</h4><ul>';
-                historiqueCombats.slice(0, 3).forEach((h, index) => { // On garde les 3 derniers
-                    texteHistorique += '<li>Partie ' + (index + 1) + ' : Victoire de <strong>' + h.vainqueur + '</strong> (' + h.tours + ' tours, ' + h.temps + 's)</li>';
+                // Construction de l'affichage (Historique + Stats globales)
+                let texteBilan = '<h4>🏆 Statistiques de session :</h4>';
+                texteBilan += '<p>Parties jouées : <strong>' + totalParties + '</strong> | Malik : <strong>' + victoiresMalik + ' victoires</strong> | Valentin : <strong>' + victoiresValentin + ' victoires</strong></p>';
+
+                texteBilan += '<h4>📜 Historique récent :</h4><ul>';
+                historiqueCombats.slice(0, 3).forEach((h, index) => {
+                    texteBilan += '<li>Partie ' + (index + 1) + ' : Victoire de <strong>' + h.vainqueur + '</strong> (' + h.tours + ' tours, ' + h.temps + 's)</li>';
                 });
-                texteHistorique += '</ul>';
+                texteBilan += '</ul>';
 
                 resume.innerHTML += '<p>Combat terminé en <strong>' + tourDeCombat + ' tours</strong>, <strong>' + coupsCritiquesTotaux + ' coup(s) critique(s)</strong> et en <strong>' + secondesCombat + ' secondes</strong> !</p>';
-                resume.innerHTML += texteHistorique; //  Affichage de l'historique dans le résumé
+                resume.innerHTML += texteBilan; // Affichage combiné
 
                 showWinner(vainqueur);
             }

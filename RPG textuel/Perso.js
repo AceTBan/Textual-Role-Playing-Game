@@ -28,7 +28,12 @@ patate(cible) {
                 resultat += '<span style="color: #d35400; font-weight: bold;">⚠️ ' + this.nom + ' se blesse lui-même !</span><br>';
                 this.sante -= this.puissance;
             }
-
+            
+            if (Math.random() < 0.10 && this.sante > 0) {
+                let soin = Math.round(Math.random() * 5 + 2);
+                this.sante += soin;
+                resultat += '<span style="color: #27ae60; font-weight: bold;">🧪 ' + this.nom + ' trouve une potion et récupère +' + soin + ' PV !</span><br>';
+            }
             resultat += (cible.sante <= 0) ? '<span style="color: #c0392b; font-weight: bold;">💀 ' + cible.nom + ' est mort au combat !</span><br>' : '';
             resultat += (this.sante <= 0) ? '<span style="color: #c0392b; font-weight: bold;">💀 ' + this.nom + ' est mort au combat !</span><br>' : ''; 
         } else {

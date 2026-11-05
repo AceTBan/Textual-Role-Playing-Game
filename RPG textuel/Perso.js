@@ -16,6 +16,22 @@ patate(cible) {
                 let estCritique = (Math.random() < 0.15);
                 let degatsInfliges = estCritique ? this.puissance * 2 : this.puissance;
 
+                let ciblePare = (Math.random() < 0.15);
+                if (ciblePare) {
+                    degatsInfliges = Math.floor(degatsInfliges / 2); // Les dégâts sont divisés par deux
+                    resultat += '<span style="color: #2980b9; font-style: italic;">🛡️ ' + cible.nom + ' pare le coup de ' + this.nom + ' et réduit les dégâts de moitié !</span><br>';
+                }
+
+                if (estCritique && !ciblePare) {
+                    resultat += '<span style="color: #e74c3c; font-weight: bold;">💥 COUP CRITIQUE ! ' + this.nom + ' frappe violemment ' + cible.nom + ' (+' + degatsInfliges + ' dégâts)</span><br>';
+                } else if (estCritique && ciblePare) {
+                    resultat += '<span style="color: #e74c3c; font-weight: bold;">💥 Coup critique amorti ! ' + this.nom + ' frappe ' + cible.nom + ' (+' + degatsInfliges + ' dégâts)</span><br>';
+                } else if (!ciblePare) {
+                    resultat += '<span style="color: #2c3e50;">⚔️ ' + this.nom + ' a frappé ' + cible.nom + '</span><br>';
+                }
+
+                cible.sante -= degatsInfliges;
+            }
                 if (estCritique) {
                     resultat += '<span style="color: #e74c3c; font-weight: bold;">💥 COUP CRITIQUE ! ' + this.nom + ' frappe violemment ' + cible.nom + ' (+' + degatsInfliges + ' dégâts)</span><br>';
                 } else {

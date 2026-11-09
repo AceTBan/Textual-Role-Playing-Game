@@ -5,6 +5,23 @@ class Perso {
         this.nom = nom;
         this.sante = this.initialSante = Math.round(Math.random() * 20 + 5);
         this.puissance = Math.round(Math.random() * 3 + 1);
+        this.niveau = 1; // Niveau de départ
+        this.xp = 0;     // Expérience de départ
+    }
+
+    // Méthode pour gagner de l'XP et monter de niveau
+    gagnerXp(montant) {
+        let messageXp = '';
+        this.xp += montant;
+        if (this.xp >= 10) { // Seuil de niveau fixé à 10 points d'XP
+            this.niveau++;
+            this.xp -= 10;
+            this.puissance += 1; // +1 de puissance permanente par niveau !
+            this.initialSante += 5; // +5 PV max
+            this.sante = this.initialSante; // Restauration partielle/totale en cadeau
+            messageXp += '<br><span style="color: #8e44ad; font-weight: bold;">⭐ NIVEAU SUPÉRIEUR ! ' + this.nom + ' passe au niveau ' + this.niveau + ' ! (Puissance et PV max augmentés)</span>';
+        }
+        return messageXp;
     }
 
 patate(cible) {
@@ -29,6 +46,9 @@ patate(cible) {
                 if (ciblePare) {
                     degatsInfliges = Math.max(1, Math.floor(degatsInfliges / 2));
                     resultat += '<span style="color: #2980b9; font-style: italic;">🛡️ ' + cible.nom + ' pare le coup et réduit les dégâts !</span><br>';
+                }else {
+                    // Gain d'XP si l'attaque touche et blesse
+                    resultat += this.gagnerXp(3);
                 }
 
                 if (estCritique) {

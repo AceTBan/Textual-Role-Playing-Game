@@ -15,9 +15,14 @@ document.addEventListener('DOMContentLoaded',function() {
         victoiresMalik = 0,
         victoiresValentin = 0;
 
-    lancer.addEventListener('click',function(){
-        malik = new Perso('Malik');
-        valentin = new Perso('Valentin');
+lancer.addEventListener('click', function(){
+        // Récupération des valeurs des inputs (avec des valeurs par défaut si c'est vide)
+        let nomPerso1 = document.querySelector('#nom1').value.trim() || 'Malik';
+        let nomPerso2 = document.querySelector('#nom2').value.trim() || 'Valentin';
+
+        malik = new Perso(nomPerso1);
+        valentin = new Perso(nomPerso2);
+        
         tourDeCombat = 0;
         coupsCritiquesTotaux = 0;
         secondesCombat = 0;

@@ -14,6 +14,17 @@ document.addEventListener('DOMContentLoaded',function() {
         totalParties = 0,
         victoiresMalik = 0,
         victoiresValentin = 0;
+        let reset = document.querySelector('#reset');
+
+    reset.addEventListener('click', function() {
+        clearInterval(timerCombat);
+        malik = null;
+        valentin = null;
+        tourDeCombat = 0;
+        secondesCombat = 0;
+        attaque.disabled = true;
+        resume.innerHTML = '<p>Jeu réinitialisé. Prêt pour un nouveau combat !</p>';
+    });
 
 lancer.addEventListener('click', function(){
         // Récupération des valeurs des inputs (avec des valeurs par défaut si c'est vide)

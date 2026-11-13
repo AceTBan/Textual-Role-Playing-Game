@@ -64,12 +64,22 @@ lancer.addEventListener('click', function(){
             resume.innerHTML += '<p>' + malik.nom + ' : ' + malik.sante + ' PV</p>';
             resume.innerHTML += '<p>' + valentin.nom + ' : ' + valentin.sante + ' PV</p>';
 
-            if (malik.sante <= 0 || valentin.sante <= 0) {
+            if (malik.sante <= 0 || valentin.sante <= 0 || tourDeCombat >= 20) {
                 attaque.disabled = true;
                 clearInterval(timerCombat);
 
-                let vainqueur = (malik.sante > 0) ? 'Malik' : (valentin.sante > 0) ? 'Valentin' : 'Match nul';
-                
+                let vainqueur = '';
+                if (malik.sante > valentin.sante) {
+                    vainqueur = malik.nom;
+                } else if (valentin.sante > malik.sante) {
+                    vainqueur = valentin.nom;
+                } else {
+                    vainqueur = 'Match nul';
+                }
+
+                if (tourDeCombat >= 20 && malik.sante > 0 && valentin.sante > 0) {
+                    resume.innerHTML += '<p style="color: #e67e22; font-weight: bold;">⏱️ Fin du temps réglementaire (20 tours) ! Égalité par épuisement !</p>';
+                }
                 // Mise à jour des stats globales de session
                 totalParties++;
                 if (vainqueur === 'Malik') victoiresMalik++;

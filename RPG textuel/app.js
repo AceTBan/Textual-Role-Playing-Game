@@ -64,26 +64,30 @@ lancer.addEventListener('click', function(){
             resume.innerHTML += '<p>' + malik.nom + ' : ' + malik.sante + ' PV</p>';
             resume.innerHTML += '<p>' + valentin.nom + ' : ' + valentin.sante + ' PV</p>';
 
-            if (malik.sante <= 0 || valentin.sante <= 0 || tourDeCombat >= 20) {
+             if (malik.sante <= 0 || valentin.sante <= 0 || tourDeCombat >= 20) {
                 attaque.disabled = true;
                 clearInterval(timerCombat);
 
+                // Message spécifique si le combat s'arrête à cause de la limite de tours
+                if (tourDeCombat >= 20 && malik.sante > 0 && valentin.sante > 0) {
+                    resume.innerHTML += '<p style="color: #e67e22; font-weight: bold;">⏱️ Limite de 20 tours atteinte ! Les combattants s\'effondrent d\'épuisement !</p>';
+                }
+
+                // Détermination du gagnant (celui qui a le plus de PV restants gagne aux points, sinon Match nul)
                 let vainqueur = '';
-                if (malik.sante > valentin.sante) {
+                if (malik.sante > 0 && malik.sante > valentin.sante) {
                     vainqueur = malik.nom;
-                } else if (valentin.sante > malik.sante) {
+                } else if (valentin.sante > 0 && valentin.sante > malik.sante) {
                     vainqueur = valentin.nom;
                 } else {
                     vainqueur = 'Match nul';
                 }
 
-                if (tourDeCombat >= 20 && malik.sante > 0 && valentin.sante > 0) {
-                    resume.innerHTML += '<p style="color: #e67e22; font-weight: bold;">⏱️ Fin du temps réglementaire (20 tours) ! Égalité par épuisement !</p>';
-                }
-                // Mise à jour des stats globales de session
+                // Mise à jour des statistiques globales et de l'historique
                 totalParties++;
-                if (vainqueur === 'Malik') victoiresMalik++;
-                if (vainqueur === 'Valentin') victoiresValentin++;
+                if (vainqueur !== 'Match nul') {
+                    victoiresGlobales[vainqueur] = (victoiresGlobales[vainqueur] || 0) + 1;
+                }
 
                 historiqueCombats.unshift({
                     vainqueur: vainqueur,
@@ -91,31 +95,38 @@ lancer.addEventListener('click', function(){
                     temps: secondesCombat
                 });
 
-                // Construction de l'affichage (Historique + Stats globales)
                 let texteBilan = '<h4>🏆 Statistiques de session :</h4>';
-                texteBilan += '<p>Parties jouées : <strong>' + totalParties + '</strong> | Malik : <strong>' + victoiresMalik + ' victoires</strong> | Valentin : <strong>' + victoiresValentin + ' victoires</strong></p>';
+                texteBilan += '<p>Parties jouées : <strong>' + totalParties + '</strong></p><ul>';
+                for (let combattant in victoiresGlobales) {
+                    texteBilan += '<li>' + combattant + ' : <strong>' + victoiresGlobales[combattant] + ' victoires</strong></li>';
+                }
+                texteBilan += '</ul>';
 
                 texteBilan += '<h4>📜 Historique récent :</h4><ul>';
                 historiqueCombats.slice(0, 3).forEach((h, index) => {
-                    texteBilan += '<li>Partie ' + (index + 1) + ' : Victoire de <strong>' + h.vainqueur + '</strong> (' + h.tours + ' tours, ' + h.temps + 's)</li>';
+                    texteBilan += '<li>Partie ' + (index + 1) + ' : <strong>' + h.vainqueur + '</strong> (' + h.tours + ' tours, ' + h.temps + 's)</li>';
                 });
                 texteBilan += '</ul>';
 
                 resume.innerHTML += '<p>Combat terminé en <strong>' + tourDeCombat + ' tours</strong>, <strong>' + coupsCritiquesTotaux + ' coup(s) critique(s)</strong> et en <strong>' + secondesCombat + ' secondes</strong> !</p>';
-                resume.innerHTML += texteBilan; // Affichage combiné
+                resume.innerHTML += texteBilan;
 
                 showWinner(vainqueur);
             }
         }
     });
 
-    function showWinner(winner) { 
+function showWinner(winner) { 
+        let messageFin = (winner === 'Match nul') 
+            ? 'Match nul après ' + secondesCombat + ' secondes ! Voulez-vous rejouer ?' 
+            : winner + ' a gagné en ' + secondesCombat + ' secondes ! Voulez-vous rejouer ?';
+
         setTimeout(function() { 
-            if (confirm(winner + ' a gagné en ' + secondesCombat + ' secondes ! Voulez-vous rejouer ?')) { 
+            if (confirm(messageFin)) { 
                 lancer.click(); 
             } 
         }, 100); 
-    } 
+    }
 
     resume.innerHTML += '<p>Bienvenue dans le jeu de combat ! Appuyez sur "Lancer" pour commencer.</p>';
 });

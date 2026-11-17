@@ -15,6 +15,15 @@ document.addEventListener('DOMContentLoaded',function() {
         victoiresMalik = 0,
         victoiresValentin = 0;
         let reset = document.querySelector('#reset');
+        document.addEventListener('keydown', function(event) {
+        // On vérifie que l'utilisateur n'est pas en train de taper un nom dans un input
+        if (document.activeElement.tagName === 'INPUT') return;
+
+        if ((event.key === 'Enter' || event.key === ' ') && !attaque.disabled) {
+            event.preventDefault(); // Évite de faire défiler la page avec Espace
+            attaque.click();
+        }
+    });
 
     reset.addEventListener('click', function() {
         clearInterval(timerCombat);

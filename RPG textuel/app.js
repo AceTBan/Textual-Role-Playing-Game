@@ -1,6 +1,34 @@
 'use strict';
 
 document.addEventListener('DOMContentLoaded',function() {
+    let auto = document.querySelector('#auto');
+    let timerAuto = null;
+
+    // Dans l'écouteur de ton bouton #lancer, active aussi le bouton auto :
+    // auto.disabled = false;
+
+    auto.addEventListener('click', function() {
+        if (timerAuto) {
+            // Si déjà en cours, on met en pause
+            clearInterval(timerAuto);
+            timerAuto = null;
+            auto.textContent = 'Auto-Combat';
+        } else {
+            // Sinon on lance une attaque toutes les 500ms
+            auto.textContent = 'Pause Auto';
+            timerAuto = setInterval(() => {
+                if (!attaque.disabled) {
+                    attaque.click();
+                } else {
+                    // Dès que le combat s'arrête (K.O. ou 20 tours), on coupe l'auto-combat
+                    clearInterval(timerAuto);
+                    timerAuto = null;
+                    auto.textContent = 'Auto-Combat';
+                    auto.disabled = true;
+                }
+            }, 500);
+        }
+    });
     let lancer = document.querySelector('#lancer'),
         attaque = document.querySelector('#attaque'),
         resume = document.querySelector('#resume'),

@@ -1,26 +1,32 @@
 'use strict';
 
-document.addEventListener('DOMContentLoaded',function() {
-    let auto = document.querySelector('#auto');
-    let timerAuto = null;
-
-    // Dans l'écouteur de ton bouton #lancer, active aussi le bouton auto :
-    // auto.disabled = false;
+document.addEventListener('DOMContentLoaded', function() {
+    let lancer = document.querySelector('#lancer'),
+        attaque = document.querySelector('#attaque'),
+        auto = document.querySelector('#auto'),
+        reset = document.querySelector('#reset'),
+        resume = document.querySelector('#resume'),
+        malik, valentin,
+        tourDeCombat = 0,
+        coupsCritiquesTotaux = 0,
+        secondesCombat = 0,
+        timerCombat = null,
+        timerAuto = null,
+        historiqueCombats = [],
+        totalParties = 0,
+        victoiresGlobales = {};
 
     auto.addEventListener('click', function() {
         if (timerAuto) {
-            // Si déjà en cours, on met en pause
             clearInterval(timerAuto);
             timerAuto = null;
             auto.textContent = 'Auto-Combat';
         } else {
-            // Sinon on lance une attaque toutes les 500ms
             auto.textContent = 'Pause Auto';
             timerAuto = setInterval(() => {
                 if (!attaque.disabled) {
                     attaque.click();
                 } else {
-                    // Dès que le combat s'arrête (K.O. ou 20 tours), on coupe l'auto-combat
                     clearInterval(timerAuto);
                     timerAuto = null;
                     auto.textContent = 'Auto-Combat';
@@ -29,26 +35,12 @@ document.addEventListener('DOMContentLoaded',function() {
             }, 500);
         }
     });
-    let lancer = document.querySelector('#lancer'),
-        attaque = document.querySelector('#attaque'),
-        resume = document.querySelector('#resume'),
-        malik, valentin,
-        tourDeCombat = 0,
-        coupsCritiquesTotaux = 0,
-        secondesCombat = 0,
-        timerCombat = null,
-        historiqueCombats = [],
-        // Variables pour les statistiques globales de session
-        totalParties = 0,
-        victoiresMalik = 0,
-        victoiresValentin = 0;
-        let reset = document.querySelector('#reset');
-        document.addEventListener('keydown', function(event) {
-        // On vérifie que l'utilisateur n'est pas en train de taper un nom dans un input
+
+    document.addEventListener('keydown', function(event) {
         if (document.activeElement.tagName === 'INPUT') return;
 
         if ((event.key === 'Enter' || event.key === ' ') && !attaque.disabled) {
-            event.preventDefault(); // Évite de faire défiler la page avec Espace
+            event.preventDefault();
             attaque.click();
         }
     });
@@ -61,6 +53,10 @@ document.addEventListener('DOMContentLoaded',function() {
         secondesCombat = 0;
         attaque.disabled = true;
         resume.innerHTML = '<p>Jeu réinitialisé. Prêt pour un nouveau combat !</p>';
+        clearInterval(timerAuto);
+        timerAuto = null;
+        auto.disabled = true;
+        auto.textContent = 'Auto-Combat';
     });
 
 lancer.addEventListener('click', function(){
@@ -83,6 +79,11 @@ lancer.addEventListener('click', function(){
         resume.innerHTML = '<p>' + malik.histoire() + '</p>';
         resume.innerHTML = '<p>' + valentin.histoire() + '</p>' + resume.innerHTML;
         attaque.disabled = false;
+
+        auto.disabled = false;
+        clearInterval(timerAuto);
+        timerAuto = null;
+        auto.textContent = 'Auto-Combat';
     });
 
     attaque.addEventListener('click', function() {
@@ -101,7 +102,7 @@ lancer.addEventListener('click', function(){
             resume.innerHTML += '<p>' + malik.nom + ' : ' + malik.sante + ' PV</p>';
             resume.innerHTML += '<p>' + valentin.nom + ' : ' + valentin.sante + ' PV</p>';
 
-             if (malik.sante <= 0 || valentin.sante <= 0 || tourDeCombat >= 20) {
+            if (malik.sante <= 0 || valentin.sante <= 0 || tourDeCombat >= 20) {
                 attaque.disabled = true;
                 clearInterval(timerCombat);
 

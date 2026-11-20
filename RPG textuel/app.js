@@ -34,6 +34,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }, 500);
         }
+
+    let copier = document.querySelector('#copier');
+
+    copier.addEventListener('click', function() {
+        // innerText récupère uniquement le texte propre sans les balises HTML (<span>, <br>, etc.)
+        let textePropre = resume.innerText; 
+        
+        navigator.clipboard.writeText(textePropre).then(() => {
+            let texteOriginal = copier.textContent;
+            copier.textContent = '✅ Copié !';
+            setTimeout(() => {
+                copier.textContent = texteOriginal;
+            }, 1500);
+        });
+    });
     });
 
     document.addEventListener('keydown', function(event) {
